@@ -26,24 +26,23 @@ jobs:
           gradle-version: '8.7'
 
       - name: Build debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace --info 2>&1 | tail -100
-        continue-on-error: true
-
-      - name: Print full error if failed
-        if: failure()
-        run: gradle assembleDebug --no-daemon 2>&1 || true
+        run: gradle assembleDebug --no-daemon --stacktrace 2>&1
 
       - name: Build release APK (unsigned)
-        run: gradle assembleRelease --no-daemon
+        run: gradle assembleRelease --no-daemon --stacktrace 2>&1
 
       - name: Upload debug APK
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: KaellHUB-debug
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
 
       - name: Upload release APK
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: KaellHUB-release-unsigned
           path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: warn
